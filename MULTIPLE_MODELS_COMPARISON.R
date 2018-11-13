@@ -3,7 +3,7 @@ library(Metrics)
 library(pROC)
 library(ROCR)
 
-Data <- read.csv("F:/6. EXPLORATION/2. R/GermanCredit.csv", sep = ",", header = T)
+Data <- read.csv(".../GermanCredit.csv", sep = ",", header = T)
 head(Data)
 
 table(Data$Class)
@@ -21,17 +21,13 @@ ind <- sample(2, nrow(train), replace=T, prob=c(0.70,0.30))
 trainData<-Data[ind==1,]
 testData <- Data[ind==2,]
 
+### GLM 
+
 set.seed(33)
 Logfit <- train(Class1 ~ .,data = trainData[,-10],method = "glm", metric="Accuracy")
 names(Logfit)
 confusionMatrix(Logfit)
 PRED_LOG <- predict(Logfit,testData)
-
-#confusionMatrix(testData$Class1, PRED_LOG)
-#ROCRpred <- prediction(as.numeric(PRED_LOG), as.numeric(testData$Class1))
-#ROCRperf <- performance(ROCRpred, 'tpr','fpr')
-
-#plot(ROCRperf, colorize = TRUE, text.adj = c(-0.2,1.7))
 
 ### Decision Trees 
 
@@ -40,30 +36,42 @@ DTREE <- train(Class1 ~ .,data = trainData[,-10],method = "ctree", metric="Accur
 confusionMatrix(DTREE)
 PRED_DTREE <- predict(DTREE,testData)
 
+### Random Forest 
+
 set.seed(33)
 RFOREST <- train(Class1 ~ .,data = trainData[,-10],method = "rf", metric="Accuracy")
 confusionMatrix(RFOREST)
 PRED_RFOREST <- predict(RFOREST,testData)
+
+### KNN 
 
 set.seed(33)
 KNN_MOD <- train(Class1 ~ .,data = trainData[,-10],method = "knn", metric="Accuracy")
 confusionMatrix(KNN_MOD)
 PRED_KNN <- predict(KNN_MOD,testData)
 
+### Naive Bayes
+
 set.seed(33)
 NB_MOD <- train(Class1 ~ .,data = trainData[,-10],method = "naive_bayes", metric="Accuracy")
 confusionMatrix(NB_MOD)
 PRED_NB <- predict(NB_MOD,testData)
+
+### SVM 
 
 set.seed(33)
 SVM_MOD <- train(Class1 ~ .,data = trainData[,-10],method = "svmLinear3", metric="Accuracy")
 confusionMatrix(SVM_MOD)
 PRED_SVM <- predict(SVM_MOD,testData)
 
+### GBM 
+
 set.seed(33)
 GBM_MOD <- train(Class1 ~ .,data = trainData[,-10],method = "gbm", metric="Accuracy", verbose=F)
 confusionMatrix(GBM_MOD)
 PRED_GBM <- predict(GBM_MOD,testData)
+
+### XGBM 
 
 set.seed(33)
 XGBM_MOD <- train(Class1 ~ .,data = trainData[,-10],method = "xgbTree", metric="Accuracy", verbose=F)
@@ -91,6 +99,4 @@ legend(x = "bottomright",
                   "Naive Bayes", "SVM", "GBM", "XGBM"),
        fill = 1:m, ncol = 2,
        cex = 0.6)
-
-
 
